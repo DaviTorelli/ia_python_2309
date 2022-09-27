@@ -77,3 +77,54 @@ label_encoder_relationship = LabelEncoder()
 label_encoder_race = LabelEncoder()
 label_encoder_sex = LabelEncoder()
 label_encoder_country = LabelEncoder()
+
+X_census[:,1] = label_encoder_workclass.fit_transform(X_census[:,1])
+X_census[:,3] = label_encoder_education.fit_transform(X_census[:,3])
+X_census[:,5] = label_encoder_marital.fit_transform(X_census[:,5])
+X_census[:,6] = label_encoder_occupation.fit_transform(X_census[:,6])
+X_census[:,7] = label_encoder_relationship.fit_transform(X_census[:,7])
+X_census[:,8] = label_encoder_race.fit_transform(X_census[:,8])
+X_census[:,9] = label_encoder_sex.fit_transform(X_census[:,9])
+X_census[:,13] = label_encoder_country.fit_transform(X_census[:,13])
+
+"""O problema do LabelEncoder, é que se houverem muitas categorias, serão convertidos em muitos números."""
+
+len(np.unique(base_census['workclass']))
+
+len(np.unique(base_census['occupation']))
+
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+#OneHotEncoder - complemento do labelencoder
+
+onehotencoder_census = ColumnTransformer(transformers=[('OneHot', OneHotEncoder(),
+                                                        [1,3,5,6,7,8,9,13])], remainder='passthrough')
+
+X_census = onehotencoder_census.fit_transform(X_census).toarray()
+
+X_census.shape #mostra quantas linhas e coluna a variável X_census possui
+
+"""#Escalonamento de valores"""
+
+from sklearn.preprocessing import StandardScaler
+scaler_census = StandardScaler()
+X_census = scaler_census.fit_transform(X_census)
+
+X_census[0]
+
+"""#Divisão das bases em treinamento e teste"""
+
+from sklearn.model_selection import train_test_split
+
+X_census_treinamento, X_census_teste, y_census_treinamento, y_census_teste = train_test_split(X_census, y_census, test_size = 0.15, random_state = 0)
+
+X_census_treinamento.shape, y_census_treinamento.shape
+
+X_census_teste.shape, y_census_teste.shape
+
+"""#Salvando as Variáveis"""
+
+import pickle
+
+with open('census.pkl', mode= 'wb') as f:
+  pickle.dump([X_census_treinamento, y_census_treinamento, X_census_teste, y_census_teste], f)
